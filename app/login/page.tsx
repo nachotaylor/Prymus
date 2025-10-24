@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Eye, EyeOff, Shield } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -55,13 +55,13 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
-        {/* Logo and Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <div className="flex items-center gap-2">
-              <Shield className="h-10 w-10 text-primary" />
-              <span className="text-3xl font-bold text-foreground">PRYMUS</span>
-            </div>
+            <img
+              src="https://prymusbroker.com/wp-content/uploads/2024/12/LOGO-SITIO-WEB.png"
+              alt="Prymus Broker"
+              className="h-16 object-contain"
+            />
           </div>
           <p className="text-muted-foreground text-sm">Plataforma de Gestión para Productores de Seguros</p>
         </div>

@@ -24,9 +24,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Search, MoreHorizontal, Eye, FileText, CheckCircle2 } from "lucide-react"
+import { Search, MoreHorizontal, Eye, CheckCircle2, AlertCircle, Download } from "lucide-react"
 import Link from "next/link"
 
 const policies = [
@@ -96,10 +96,12 @@ const statusConfig = {
 
 export default function PoliciesPage() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [activeTab, setActiveTab] = useState("all")
+  const [statusFilter, setStatusFilter] = useState("all")
   const [companyFilter, setCompanyFilter] = useState<string>("all")
   const [nameFilter, setNameFilter] = useState("")
   const [dniFilter, setDniFilter] = useState("")
+  const [selectedPolicy, setSelectedPolicy] = useState<(typeof policies)[0] | null>(null)
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
 
   const filteredPolicies = policies.filter((policy) => {
     const matchesSearch =
@@ -109,14 +111,19 @@ export default function PoliciesPage() {
     const matchesCompany = companyFilter === "all" || policy.company === companyFilter
     const matchesName = policy.client.toLowerCase().includes(nameFilter.toLowerCase())
     const matchesDni = policy.dni.includes(dniFilter)
+    const matchesStatus = statusFilter === "all" || policy.status === statusFilter
 
-    if (activeTab === "all") return matchesSearch && matchesCompany && matchesName && matchesDni
-    return matchesSearch && matchesCompany && matchesName && matchesDni && policy.status === activeTab
+    return matchesSearch && matchesCompany && matchesName && matchesDni && matchesStatus
   })
 
   const stats = {
     active: policies.filter((p) => p.status === "active").length,
     expiring: policies.filter((p) => p.status === "expiring").length,
+  }
+
+  const handleViewDetail = (policy: (typeof policies)[0]) => {
+    setSelectedPolicy(policy)
+    setIsDetailOpen(true)
   }
 
   return (
@@ -161,7 +168,7 @@ export default function PoliciesPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Por Vencer</CardTitle>
-              <CheckCircle2 className="size-4 text-yellow-600" />
+              <AlertCircle className="size-4 text-yellow-600" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.expiring}</div>
@@ -188,10 +195,22 @@ export default function PoliciesPage() {
                 />
               </div>
 
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-4">
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas</SelectItem>
+                    <SelectItem value="active">Vigentes</SelectItem>
+                    <SelectItem value="expiring">Por Vencer</SelectItem>
+                    <SelectItem value="expired">Vencidas</SelectItem>
+                  </SelectContent>
+                </Select>
+
                 <Select value={companyFilter} onValueChange={setCompanyFilter}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Filtrar por compañía" />
+                    <SelectValue placeholder="Compañía" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todas las compañías</SelectItem>
@@ -216,16 +235,20 @@ export default function PoliciesPage() {
                   onChange={(e) => setDniFilter(e.target.value)}
                 />
               </div>
-            </div>
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-4">
-              <TabsList>
-                <TabsTrigger value="all">Todas</TabsTrigger>
-                <TabsTrigger value="active">Vigentes</TabsTrigger>
-                <TabsTrigger value="expiring">Por Vencer</TabsTrigger>
-                <TabsTrigger value="expired">Vencidas</TabsTrigger>
-              </TabsList>
-            </Tabs>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchQuery("")
+                  setStatusFilter("all")
+                  setCompanyFilter("all")
+                  setNameFilter("")
+                  setDniFilter("")
+                }}
+              >
+                Limpiar Filtros
+              </Button>
+            </div>
 
             <div className="rounded-md border">
               <Table>
@@ -285,12 +308,12 @@ export default function PoliciesPage() {
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleViewDetail(policy)}>
                                 <Eye className="mr-2 size-4" />
                                 Ver Detalles
                               </DropdownMenuItem>
                               <DropdownMenuItem>
-                                <FileText className="mr-2 size-4" />
+                                <Download className="mr-2 size-4" />
                                 Descargar Póliza
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -305,6 +328,69 @@ export default function PoliciesPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Detalle de Póliza</DialogTitle>
+            <DialogDescription>{selectedPolicy?.policyNumber}</DialogDescription>
+          </DialogHeader>
+
+          {selectedPolicy && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Número de Póliza</p>
+                  <p className="text-lg font-semibold">{selectedPolicy.policyNumber}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Estado</p>
+                  <Badge className={statusConfig[selectedPolicy.status as keyof typeof statusConfig].className}>
+                    {statusConfig[selectedPolicy.status as keyof typeof statusConfig].label}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Cliente</p>
+                  <p className="text-lg font-semibold">{selectedPolicy.client}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">DNI</p>
+                  <p className="text-lg font-semibold">{selectedPolicy.dni}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Compañía</p>
+                  <p className="text-lg font-semibold">{selectedPolicy.company}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Cobertura</p>
+                  <Badge variant="outline">{selectedPolicy.coverage}</Badge>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Prima</p>
+                  <p className="text-lg font-semibold">{selectedPolicy.premium}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Vigencia</p>
+                  <p className="text-sm">
+                    {new Date(selectedPolicy.startDate).toLocaleDateString("es-AR")} -{" "}
+                    {new Date(selectedPolicy.endDate).toLocaleDateString("es-AR")}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsDetailOpen(false)}>
+                  Cerrar
+                </Button>
+                <Button>
+                  <Download className="mr-2 size-4" />
+                  Descargar Póliza
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </SidebarInset>
   )
 }

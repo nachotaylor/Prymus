@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   DropdownMenu,
@@ -24,7 +25,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Plus, Search, MoreHorizontal, Eye, FileText, FileCheck } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Plus, Search, MoreHorizontal, Eye, FileText, FileCheck, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -74,15 +76,20 @@ const quotations = [
 export default function QuotationsPage() {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
+  const [companyFilter, setCompanyFilter] = useState("all")
   const [selectedQuotation, setSelectedQuotation] = useState<(typeof quotations)[0] | null>(null)
   const [isDetailOpen, setIsDetailOpen] = useState(false)
 
-  const filteredQuotations = quotations.filter(
-    (quotation) =>
+  const filteredQuotations = quotations.filter((quotation) => {
+    const matchesSearch =
       quotation.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
       quotation.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      quotation.vehicle.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+      quotation.vehicle.toLowerCase().includes(searchQuery.toLowerCase())
+
+    const matchesCompany = companyFilter === "all" || quotation.quotes.some((q) => q.company === companyFilter)
+
+    return matchesSearch && matchesCompany
+  })
 
   const handleViewDetail = (quotation: (typeof quotations)[0]) => {
     setSelectedQuotation(quotation)
@@ -100,6 +107,14 @@ export default function QuotationsPage() {
     router.push(
       `/dashboard/quotations/issue/${company.toLowerCase()}?quotationId=${selectedQuotation?.id}&coverage=${coverage}`,
     )
+  }
+
+  const getLowestPrice = (quotes: (typeof quotations)[0]["quotes"]) => {
+    return Math.min(...quotes.map((q) => q.premium))
+  }
+
+  const getHighestPrice = (quotes: (typeof quotations)[0]["quotes"]) => {
+    return Math.max(...quotes.map((q) => q.premium))
   }
 
   return (
@@ -142,7 +157,7 @@ export default function QuotationsPage() {
             <CardDescription>Lista completa de cotizaciones realizadas</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="mb-4">
+            <div className="mb-4 space-y-4">
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
                 <Input
@@ -153,6 +168,19 @@ export default function QuotationsPage() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
+
+              <Select value={companyFilter} onValueChange={setCompanyFilter}>
+                <SelectTrigger className="w-full md:w-64">
+                  <SelectValue placeholder="Filtrar por compañía" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas las compañías</SelectItem>
+                  <SelectItem value="Allianz">Allianz</SelectItem>
+                  <SelectItem value="Berkley">Berkley</SelectItem>
+                  <SelectItem value="Rivadavia">Rivadavia</SelectItem>
+                  <SelectItem value="Mercantil">Mercantil</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="rounded-md border">
@@ -163,13 +191,14 @@ export default function QuotationsPage() {
                     <TableHead>Cliente</TableHead>
                     <TableHead>Vehículo</TableHead>
                     <TableHead>Fecha</TableHead>
+                    <TableHead>Rango de Precios</TableHead>
                     <TableHead className="text-right">Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredQuotations.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="h-24 text-center">
+                      <TableCell colSpan={6} className="h-24 text-center">
                         No se encontraron cotizaciones.
                       </TableCell>
                     </TableRow>
@@ -180,6 +209,15 @@ export default function QuotationsPage() {
                         <TableCell>{quotation.client}</TableCell>
                         <TableCell>{quotation.vehicle}</TableCell>
                         <TableCell>{new Date(quotation.date).toLocaleDateString("es-AR")}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <TrendingUp className="size-4 text-muted-foreground" />
+                            <span className="text-sm">
+                              ${getLowestPrice(quotation.quotes).toLocaleString("es-AR")} - $
+                              {getHighestPrice(quotation.quotes).toLocaleString("es-AR")}
+                            </span>
+                          </div>
+                        </TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -221,7 +259,30 @@ export default function QuotationsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="mt-4">
+          <div className="mt-4 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Número de Cotización</p>
+                <p className="text-lg font-semibold">{selectedQuotation?.id}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Fecha</p>
+                <p className="text-lg font-semibold">
+                  {selectedQuotation && new Date(selectedQuotation.date).toLocaleDateString("es-AR")}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Cliente</p>
+                <p className="text-lg font-semibold">{selectedQuotation?.client}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Vehículo</p>
+                <p className="text-lg font-semibold">{selectedQuotation?.vehicle}</p>
+              </div>
+            </div>
+
+            <Separator className="my-4" />
+
             <h3 className="text-lg font-semibold mb-4">Cuadro Comparativo de Cotizaciones</h3>
             <div className="rounded-md border">
               <Table>
@@ -234,23 +295,40 @@ export default function QuotationsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {selectedQuotation?.quotes.map((quote, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{quote.company}</TableCell>
-                      <TableCell>{quote.coverage}</TableCell>
-                      <TableCell className="text-right">${quote.premium.toLocaleString("es-AR")}</TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleIssuePolicy(quote.company, quote.coverage)}
-                        >
-                          <FileCheck className="mr-2 size-4" />
-                          Emitir Póliza
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {selectedQuotation?.quotes.map((quote, index) => {
+                    const isLowest =
+                      quote.premium === Math.min(...(selectedQuotation?.quotes.map((q) => q.premium) || []))
+                    return (
+                      <TableRow key={index} className={isLowest ? "bg-green-50" : ""}>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            {quote.company}
+                            {isLowest && (
+                              <Badge variant="outline" className="bg-green-100">
+                                Mejor Precio
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{quote.coverage}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right font-semibold">
+                          ${quote.premium.toLocaleString("es-AR")}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleIssuePolicy(quote.company, quote.coverage)}
+                          >
+                            <FileCheck className="mr-2 size-4" />
+                            Emitir
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
                 </TableBody>
               </Table>
             </div>

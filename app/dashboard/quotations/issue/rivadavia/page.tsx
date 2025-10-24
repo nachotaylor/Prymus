@@ -31,7 +31,6 @@ export default function RivadaviaIssuePage() {
     if (currentStep === 1) {
       setCurrentStep(2)
     } else {
-      // TODO: Connect to backend API
       console.log("[v0] Submitting Rivadavia policy request")
       router.push("/dashboard/policies")
     }
@@ -47,7 +46,14 @@ export default function RivadaviaIssuePage() {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             </Link>
-            <h2 className="text-3xl font-bold tracking-tight">Emitir Póliza - Rivadavia</h2>
+            <div className="flex items-center gap-2">
+              <img
+                src="https://www.segurosrivadavia.com/logo-seguros-rivadavia.webp"
+                alt="Rivadavia"
+                className="h-6 object-contain"
+              />
+              <h2 className="text-3xl font-bold tracking-tight">Emitir Póliza</h2>
+            </div>
           </div>
           <p className="text-muted-foreground">
             Paso {currentStep} de 2: {currentStep === 1 ? "Solicitud de Inspección" : "Solicitud de Póliza"}
@@ -55,7 +61,6 @@ export default function RivadaviaIssuePage() {
         </div>
       </div>
 
-      {/* Progress Indicator */}
       <div className="flex items-center gap-2">
         <div className={`flex-1 h-2 rounded-full ${currentStep >= 1 ? "bg-primary" : "bg-muted"}`} />
         <div className={`flex-1 h-2 rounded-full ${currentStep >= 2 ? "bg-primary" : "bg-muted"}`} />
@@ -74,11 +79,6 @@ export default function RivadaviaIssuePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="quotation_id">Número de Cotización</Label>
-                <Input id="quotation_id" placeholder="Ej: COT-2024-001" required />
-              </div>
-
               <div className="space-y-2">
                 <Label htmlFor="images">Imágenes del Vehículo</Label>
                 <Input
@@ -120,7 +120,6 @@ export default function RivadaviaIssuePage() {
 
         {currentStep === 2 && (
           <div className="space-y-6">
-            {/* Datos del Asegurado */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -170,12 +169,8 @@ export default function RivadaviaIssuePage() {
                     <Input id="nro_documento" required />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="cuil">CUIL</Label>
-                    <Input id="cuil" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="cuit">CUIT</Label>
-                    <Input id="cuit" required />
+                    <Label htmlFor="cuit_cuil">CUIT/CUIL</Label>
+                    <Input id="cuit_cuil" placeholder="XX-XXXXXXXX-X" required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="sexo">Sexo</Label>
@@ -231,7 +226,6 @@ export default function RivadaviaIssuePage() {
               </CardContent>
             </Card>
 
-            {/* Domicilio */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -285,7 +279,6 @@ export default function RivadaviaIssuePage() {
               </CardContent>
             </Card>
 
-            {/* Condiciones Fiscales */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -333,7 +326,6 @@ export default function RivadaviaIssuePage() {
               </CardContent>
             </Card>
 
-            {/* Medio de Pago */}
             <Card>
               <CardHeader>
                 <CardTitle>Medio de Pago</CardTitle>
@@ -393,7 +385,6 @@ export default function RivadaviaIssuePage() {
               </CardContent>
             </Card>
 
-            {/* Vigencia y Cobertura */}
             <Card>
               <CardHeader>
                 <CardTitle>Vigencia y Cobertura</CardTitle>
@@ -416,7 +407,6 @@ export default function RivadaviaIssuePage() {
               </CardContent>
             </Card>
 
-            {/* Información del Vehículo */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -427,16 +417,16 @@ export default function RivadaviaIssuePage() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
+                    <Label htmlFor="patente">Patente</Label>
+                    <Input id="patente" required />
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="motor">Número de Motor</Label>
                     <Input id="motor" required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="chasis">Número de Chasis</Label>
                     <Input id="chasis" required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="patente">Patente</Label>
-                    <Input id="patente" required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="carroceria">Tipo de Carrocería</Label>

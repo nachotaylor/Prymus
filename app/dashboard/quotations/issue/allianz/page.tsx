@@ -16,7 +16,6 @@ export default function AllianzIssuePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Connect to backend API
     console.log("[v0] Submitting Allianz policy request")
     router.push("/dashboard/policies")
   }
@@ -31,19 +30,25 @@ export default function AllianzIssuePage() {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             </Link>
-            <h2 className="text-3xl font-bold tracking-tight">Emitir Póliza - Allianz</h2>
+            <div className="flex items-center gap-2">
+              <img
+                src="https://www.allianz.com.ar/content/dam/onemarketing/system/allianz-logo.svg"
+                alt="Allianz"
+                className="h-6 object-contain"
+              />
+              <h2 className="text-3xl font-bold tracking-tight">Emitir Póliza</h2>
+            </div>
           </div>
           <p className="text-muted-foreground">Complete el formulario para emitir la póliza con Allianz</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Vigencia */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Vigencia de la Póliza
+              Póliza
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -60,23 +65,49 @@ export default function AllianzIssuePage() {
           </CardContent>
         </Card>
 
-        {/* Datos del Asegurado */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5" />
-              Datos del Asegurado
+              Asegurado
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="apellido">Apellido</Label>
+                <Label htmlFor="apellido">Apellido y Nombre</Label>
                 <Input id="apellido" required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="nombre">Nombre</Label>
-                <Input id="nombre" required />
+                <Label htmlFor="condicion_iva">Condición de IVA</Label>
+                <Select required>
+                  <SelectTrigger id="condicion_iva">
+                    <SelectValue placeholder="Seleccione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">CONSUMIDOR FINAL</SelectItem>
+                    <SelectItem value="3">INSCRIPTO</SelectItem>
+                    <SelectItem value="5">INSCRIPTO - ARYP</SelectItem>
+                    <SelectItem value="2">EXENTO</SelectItem>
+                    <SelectItem value="6">INSCRIPTO EXCEPTUADO</SelectItem>
+                    <SelectItem value="9">MONOTRIBUTO</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="condicion_iibb">Condición IIBB</Label>
+                <Select required>
+                  <SelectTrigger id="condicion_iibb">
+                    <SelectValue placeholder="Seleccione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">REGIMEN SIMPLIFICADO</SelectItem>
+                    <SelectItem value="1">C.LOCAL (PROD. Y ASEGUR.)</SelectItem>
+                    <SelectItem value="2">NO INSCRIPTO (PRODUCTORES)</SelectItem>
+                    <SelectItem value="3">EXENTO O EXCLUIDO (ASEGURADOS)</SelectItem>
+                    <SelectItem value="4">CONV.MULTILATERAL (PROD Y ASE)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="tipo_documento">Tipo de Documento</Label>
@@ -90,10 +121,6 @@ export default function AllianzIssuePage() {
                     <SelectItem value="X">CUIL</SelectItem>
                     <SelectItem value="T">CUIT</SelectItem>
                     <SelectItem value="P">PASAPORTE</SelectItem>
-                    <SelectItem value="E">LIBRETA DE ENROLAMIENTO</SelectItem>
-                    <SelectItem value="C">LIBRETA CIVICA</SelectItem>
-                    <SelectItem value="U">CEDULA DE IDENTIDAD</SelectItem>
-                    <SelectItem value="L">CONSORCIO</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -139,60 +166,15 @@ export default function AllianzIssuePage() {
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" type="email" required />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="condicion_iva">Condición de IVA</Label>
-                <Select required>
-                  <SelectTrigger id="condicion_iva">
-                    <SelectValue placeholder="Seleccione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">CONSUMIDOR FINAL</SelectItem>
-                    <SelectItem value="3">INSCRIPTO</SelectItem>
-                    <SelectItem value="5">INSCRIPTO - ARYP</SelectItem>
-                    <SelectItem value="2">EXENTO</SelectItem>
-                    <SelectItem value="6">INSCRIPTO EXCEPTUADO</SelectItem>
-                    <SelectItem value="9">MONOTRIBUTO</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="condicion_iibb">Condición IIBB</Label>
-                <Select required>
-                  <SelectTrigger id="condicion_iibb">
-                    <SelectValue placeholder="Seleccione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="5">REGIMEN SIMPLIFICADO</SelectItem>
-                    <SelectItem value="1">C.LOCAL (PROD. Y ASEGUR.)</SelectItem>
-                    <SelectItem value="2">NO INSCRIPTO (PRODUCTORES)</SelectItem>
-                    <SelectItem value="3">EXENTO O EXCLUIDO (ASEGURADOS)</SelectItem>
-                    <SelectItem value="4">CONV.MULTILATERAL (PROD Y ASE)</SelectItem>
-                    <SelectItem value="00">COD. 00</SelectItem>
-                    <SelectItem value="01">COD. 01</SelectItem>
-                    <SelectItem value="02">COD. 02</SelectItem>
-                    <SelectItem value="04">COD. 04</SelectItem>
-                    <SelectItem value="05">COD. 05</SelectItem>
-                    <SelectItem value="06">COD. 06</SelectItem>
-                    <SelectItem value="07">COD. 07</SelectItem>
-                    <SelectItem value="08">COD. 08</SelectItem>
-                    <SelectItem value="10">COD. 10</SelectItem>
-                    <SelectItem value="12">COD. 12</SelectItem>
-                    <SelectItem value="13">COD. 13</SelectItem>
-                    <SelectItem value="14">COD. 14</SelectItem>
-                    <SelectItem value="15">COD. 15</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Datos del Domicilio */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Home className="h-5 w-5" />
-              Datos del Domicilio
+              Domicilio
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -221,16 +203,19 @@ export default function AllianzIssuePage() {
           </CardContent>
         </Card>
 
-        {/* Datos del Vehículo */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Car className="h-5 w-5" />
-              Datos del Vehículo
+              Vehículo
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="patente">Patente</Label>
+                <Input id="patente" required />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="nro_motor">Número de Motor</Label>
                 <Input id="nro_motor" required />
@@ -243,12 +228,11 @@ export default function AllianzIssuePage() {
           </CardContent>
         </Card>
 
-        {/* Datos de Inspección */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ClipboardCheck className="h-5 w-5" />
-              Datos de Inspección
+              Inspección
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">

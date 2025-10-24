@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -18,15 +18,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, ArrowRight, Check } from "lucide-react"
+import { ArrowLeft, ArrowRight, Check, Search } from "lucide-react"
 
 const vehicleBrands = [
-  { id: "chevrolet", name: "Chevrolet", logo: "/chevrolet-bow-tie-logo.png" },
-  { id: "ford", name: "Ford", logo: "/ford-logo-generic.png" },
-  { id: "peugeot", name: "Peugeot", logo: "/peugeot-logo.jpg" },
-  { id: "volkswagen", name: "Volkswagen", logo: "/volkswagen-logo.png" },
+  { id: "chevrolet", name: "Chevrolet", logo: "/chevrolet-logo.png" },
+  { id: "ford", name: "Ford", logo: "/ford-oval-logo.png" },
+  { id: "peugeot", name: "Peugeot", logo: "/peugeot-logo.png" },
+  { id: "volkswagen", name: "Volkswagen", logo: "/volkswagen-logo.jpg" },
   { id: "toyota", name: "Toyota", logo: "/toyota-logo.png" },
-  { id: "renault", name: "Renault", logo: "/renault-logo.jpg" },
+  { id: "renault", name: "Renault", logo: "/renault-logo.png" },
   { id: "fiat", name: "Fiat", logo: "/fiat-logo.png" },
   { id: "nissan", name: "Nissan", logo: "/nissan-logo.png" },
 ]
@@ -42,6 +42,19 @@ const vehicleModels: Record<string, string[]> = {
   nissan: ["Versa", "Kicks", "Frontier", "X-Trail", "Sentra"],
 }
 
+const vehicleVersions: Record<string, string[]> = {
+  "Chevrolet-Cruze": ["Cruze LT", "Cruze LTZ", "Cruze RS", "Cruze Premier"],
+  "Chevrolet-Onix": ["Onix LT", "Onix LTZ", "Onix RS", "Onix Premier"],
+  "Ford-Ranger": ["Ranger XL", "Ranger XLT", "Ranger Limited", "Ranger Wildtrak"],
+  "Ford-Focus": ["Focus S", "Focus SE", "Focus Titanium", "Focus ST"],
+  "Peugeot-208": ["208 Active", "208 Allure", "208 GT", "208 GT Sport"],
+  "Volkswagen-Gol": ["Gol Trend", "Gol Comfortline", "Gol Highline", "Gol GTS"],
+  "Toyota-Corolla": ["Corolla XEi", "Corolla SEi", "Corolla GLi", "Corolla GLi-S"],
+  "Renault-Sandero": ["Sandero Expression", "Sandero Dynamique", "Sandero Privilege", "Sandero RS"],
+  "Fiat-Cronos": ["Cronos Drive", "Cronos Precision", "Cronos Precision Plus", "Cronos Precision Turbo"],
+  "Nissan-Versa": ["Versa Sense", "Versa Advance", "Versa Exclusive", "Versa Platinum"],
+}
+
 const currentYear = new Date().getFullYear()
 const years = Array.from({ length: 20 }, (_, i) => currentYear - i)
 
@@ -50,7 +63,9 @@ export default function NewQuotationPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedBrand, setSelectedBrand] = useState("")
   const [selectedModel, setSelectedModel] = useState("")
+  const [selectedVersion, setSelectedVersion] = useState("")
   const [selectedYear, setSelectedYear] = useState("")
+  const [brandSearch, setBrandSearch] = useState("")
   const [formData, setFormData] = useState({
     ivaCondition: "",
     alarm: "",
@@ -58,8 +73,18 @@ export default function NewQuotationPage() {
     postalCode: "",
   })
 
+  const filteredBrands = useMemo(() => {
+    return vehicleBrands.filter((brand) => brand.name.toLowerCase().includes(brandSearch.toLowerCase()))
+  }, [brandSearch])
+
+  const availableVersions = useMemo(() => {
+    if (!selectedBrand || !selectedModel) return []
+    const key = `${vehicleBrands.find((b) => b.id === selectedBrand)?.name}-${selectedModel}`
+    return vehicleVersions[key] || []
+  }, [selectedBrand, selectedModel])
+
   const handleNext = () => {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1)
     }
   }
@@ -74,11 +99,11 @@ export default function NewQuotationPage() {
     console.log("[v0] Submitting quotation:", {
       brand: selectedBrand,
       model: selectedModel,
+      version: selectedVersion,
       year: selectedYear,
       ...formData,
     })
 
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
     router.push("/dashboard/quotations")
   }
@@ -90,8 +115,10 @@ export default function NewQuotationPage() {
       case 2:
         return selectedModel !== ""
       case 3:
-        return selectedYear !== ""
+        return selectedVersion !== ""
       case 4:
+        return selectedYear !== ""
+      case 5:
         return (
           formData.ivaCondition !== "" &&
           formData.alarm !== "" &&
@@ -138,12 +165,12 @@ export default function NewQuotationPage() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Nueva Cotización</h1>
-            <p className="text-muted-foreground">Paso {currentStep} de 4</p>
+            <p className="text-muted-foreground">Paso {currentStep} de 5</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          {[1, 2, 3, 4].map((step) => (
+          {[1, 2, 3, 4, 5].map((step) => (
             <div key={step} className="flex items-center flex-1">
               <div
                 className={`flex size-8 items-center justify-center rounded-full border-2 ${
@@ -156,7 +183,7 @@ export default function NewQuotationPage() {
               >
                 {step < currentStep ? <Check className="size-4" /> : step}
               </div>
-              {step < 4 && <div className={`h-0.5 flex-1 ${step < currentStep ? "bg-primary" : "bg-muted"}`} />}
+              {step < 5 && <div className={`h-0.5 flex-1 ${step < currentStep ? "bg-primary" : "bg-muted"}`} />}
             </div>
           ))}
         </div>
@@ -166,31 +193,47 @@ export default function NewQuotationPage() {
             <CardTitle>
               {currentStep === 1 && "Selecciona la Marca del Vehículo"}
               {currentStep === 2 && "Selecciona el Modelo"}
-              {currentStep === 3 && "Selecciona el Año"}
-              {currentStep === 4 && "Completa los Datos"}
+              {currentStep === 3 && "Selecciona la Versión"}
+              {currentStep === 4 && "Selecciona el Año"}
+              {currentStep === 5 && "Completa los Datos"}
             </CardTitle>
             <CardDescription>
               {currentStep === 1 && "Elige la marca del vehículo a cotizar"}
               {currentStep === 2 && `Elige el modelo de ${vehicleBrands.find((b) => b.id === selectedBrand)?.name}`}
-              {currentStep === 3 && "Selecciona el año del vehículo"}
-              {currentStep === 4 && "Completa la información adicional para la cotización"}
+              {currentStep === 3 && "Selecciona la versión del vehículo"}
+              {currentStep === 4 && "Selecciona el año del vehículo"}
+              {currentStep === 5 && "Completa la información adicional para la cotización"}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {currentStep === 1 && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {vehicleBrands.map((brand) => (
-                  <button
-                    key={brand.id}
-                    onClick={() => setSelectedBrand(brand.id)}
-                    className={`flex flex-col items-center justify-center gap-3 rounded-lg border-2 p-6 transition-all hover:border-primary ${
-                      selectedBrand === brand.id ? "border-primary bg-primary/5" : "border-border"
-                    }`}
-                  >
-                    <img src={brand.logo || "/placeholder.svg"} alt={brand.name} className="size-16 object-contain" />
-                    <span className="font-medium">{brand.name}</span>
-                  </button>
-                ))}
+              <div className="space-y-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar marca..."
+                    value={brandSearch}
+                    onChange={(e) => setBrandSearch(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {filteredBrands.map((brand) => (
+                    <button
+                      key={brand.id}
+                      onClick={() => {
+                        setSelectedBrand(brand.id)
+                        setBrandSearch("")
+                      }}
+                      className={`flex flex-col items-center justify-center gap-3 rounded-lg border-2 p-6 transition-all hover:border-primary ${
+                        selectedBrand === brand.id ? "border-primary bg-primary/5" : "border-border"
+                      }`}
+                    >
+                      <img src={brand.logo || "/placeholder.svg"} alt={brand.name} className="size-16 object-contain" />
+                      <span className="font-medium">{brand.name}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -215,6 +258,26 @@ export default function NewQuotationPage() {
             )}
 
             {currentStep === 3 && (
+              <RadioGroup value={selectedVersion} onValueChange={setSelectedVersion}>
+                <div className="grid gap-3">
+                  {availableVersions.map((version) => (
+                    <div
+                      key={version}
+                      className={`flex items-center space-x-3 rounded-lg border-2 p-4 transition-all ${
+                        selectedVersion === version ? "border-primary bg-primary/5" : "border-border"
+                      }`}
+                    >
+                      <RadioGroupItem value={version} id={version} />
+                      <Label htmlFor={version} className="flex-1 cursor-pointer font-medium">
+                        {version}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </RadioGroup>
+            )}
+
+            {currentStep === 4 && (
               <div className="space-y-4">
                 <Select value={selectedYear} onValueChange={setSelectedYear}>
                   <SelectTrigger>
@@ -232,94 +295,100 @@ export default function NewQuotationPage() {
                   <div className="rounded-lg border bg-muted/50 p-4">
                     <p className="text-sm font-medium">Vehículo seleccionado:</p>
                     <p className="text-lg font-bold text-primary">
-                      {vehicleBrands.find((b) => b.id === selectedBrand)?.name} {selectedModel} {selectedYear}
+                      {vehicleBrands.find((b) => b.id === selectedBrand)?.name} {selectedModel} {selectedVersion}{" "}
+                      {selectedYear}
                     </p>
                   </div>
                 )}
               </div>
             )}
 
-            {currentStep === 4 && (
+            {currentStep === 5 && (
               <div className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="iva-condition">Condición IVA *</Label>
-                  <Select
-                    value={formData.ivaCondition}
-                    onValueChange={(value) => setFormData({ ...formData, ivaCondition: value })}
-                  >
-                    <SelectTrigger id="iva-condition">
-                      <SelectValue placeholder="Selecciona la condición IVA" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="consumidor-final">Consumidor Final</SelectItem>
-                      <SelectItem value="monotributista">Monotributista</SelectItem>
-                      <SelectItem value="responsable-inscripto">Responsable Inscripto</SelectItem>
-                      <SelectItem value="exento">Exento</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="iva-condition">Condición IVA *</Label>
+                    <Select
+                      value={formData.ivaCondition}
+                      onValueChange={(value) => setFormData({ ...formData, ivaCondition: value })}
+                    >
+                      <SelectTrigger id="iva-condition">
+                        <SelectValue placeholder="Selecciona la condición IVA" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="consumidor-final">Consumidor Final</SelectItem>
+                        <SelectItem value="monotributista">Monotributista</SelectItem>
+                        <SelectItem value="responsable-inscripto">Responsable Inscripto</SelectItem>
+                        <SelectItem value="exento">Exento</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="postal-code">Código Postal *</Label>
+                    <Input
+                      id="postal-code"
+                      placeholder="Ej: 1425"
+                      value={formData.postalCode}
+                      onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+                    />
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Alarma *</Label>
-                  <RadioGroup
-                    value={formData.alarm}
-                    onValueChange={(value) => setFormData({ ...formData, alarm: value })}
-                  >
-                    <div className="flex gap-4">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="si" id="alarm-si" />
-                        <Label htmlFor="alarm-si" className="cursor-pointer">
-                          Sí
-                        </Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Alarma *</Label>
+                    <RadioGroup
+                      value={formData.alarm}
+                      onValueChange={(value) => setFormData({ ...formData, alarm: value })}
+                    >
+                      <div className="flex gap-4">
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="si" id="alarm-si" />
+                          <Label htmlFor="alarm-si" className="cursor-pointer">
+                            Sí
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="no" id="alarm-no" />
+                          <Label htmlFor="alarm-no" className="cursor-pointer">
+                            No
+                          </Label>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="no" id="alarm-no" />
-                        <Label htmlFor="alarm-no" className="cursor-pointer">
-                          No
-                        </Label>
-                      </div>
-                    </div>
-                  </RadioGroup>
-                </div>
+                    </RadioGroup>
+                  </div>
 
-                <div className="space-y-2">
-                  <Label>Tipo de Uso *</Label>
-                  <RadioGroup
-                    value={formData.usageType}
-                    onValueChange={(value) => setFormData({ ...formData, usageType: value })}
-                  >
-                    <div className="flex gap-4">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="particular" id="usage-particular" />
-                        <Label htmlFor="usage-particular" className="cursor-pointer">
-                          Particular
-                        </Label>
+                  <div className="space-y-2">
+                    <Label>Tipo de Uso *</Label>
+                    <RadioGroup
+                      value={formData.usageType}
+                      onValueChange={(value) => setFormData({ ...formData, usageType: value })}
+                    >
+                      <div className="flex gap-4">
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="particular" id="usage-particular" />
+                          <Label htmlFor="usage-particular" className="cursor-pointer">
+                            Particular
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="comercial" id="usage-comercial" />
+                          <Label htmlFor="usage-comercial" className="cursor-pointer">
+                            Comercial
+                          </Label>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="comercial" id="usage-comercial" />
-                        <Label htmlFor="usage-comercial" className="cursor-pointer">
-                          Comercial
-                        </Label>
-                      </div>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="postal-code">Código Postal *</Label>
-                  <Input
-                    id="postal-code"
-                    placeholder="Ej: 1425"
-                    value={formData.postalCode}
-                    onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
-                  />
+                    </RadioGroup>
+                  </div>
                 </div>
 
                 <div className="rounded-lg border bg-muted/50 p-4">
                   <p className="text-sm font-medium mb-2">Resumen:</p>
                   <p className="text-sm">
                     <span className="font-semibold">Vehículo:</span>{" "}
-                    {vehicleBrands.find((b) => b.id === selectedBrand)?.name} {selectedModel} {selectedYear}
+                    {vehicleBrands.find((b) => b.id === selectedBrand)?.name} {selectedModel} {selectedVersion}{" "}
+                    {selectedYear}
                   </p>
                 </div>
               </div>
@@ -332,7 +401,7 @@ export default function NewQuotationPage() {
             <ArrowLeft className="mr-2 size-4" />
             Anterior
           </Button>
-          {currentStep < 4 ? (
+          {currentStep < 5 ? (
             <Button onClick={handleNext} disabled={!canProceed()}>
               Siguiente
               <ArrowRight className="ml-2 size-4" />
