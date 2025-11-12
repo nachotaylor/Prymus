@@ -21,7 +21,7 @@ import { Users, BarChart3, TrendingUp, Download } from "lucide-react"
 import Link from "next/link"
 
 const producerPoliciesData = [
-  { producer: "Juan Pérez", policies: 8, quotations: 12, conversion: "67%", commission: "$12,500" },
+  { producer: "Victor Mateos", policies: 8, quotations: 12, conversion: "67%", commission: "$12,500" },
   { producer: "María González", policies: 6, quotations: 9, conversion: "67%", commission: "$9,200" },
   { producer: "Carlos Rodríguez", policies: 5, quotations: 8, conversion: "63%", commission: "$7,800" },
   { producer: "Ana Martínez", policies: 4, quotations: 7, conversion: "57%", commission: "$6,100" },
@@ -29,7 +29,7 @@ const producerPoliciesData = [
 ]
 
 const quotationsByProducerData = [
-  { producer: "Juan Pérez", quotations: 12, emitted: 8, pending: 4 },
+  { producer: "Victor Mateos", quotations: 12, emitted: 8, pending: 4 },
   { producer: "María González", quotations: 9, emitted: 6, pending: 3 },
   { producer: "Carlos Rodríguez", quotations: 8, emitted: 5, pending: 3 },
   { producer: "Ana Martínez", quotations: 7, emitted: 4, pending: 3 },
@@ -37,7 +37,7 @@ const quotationsByProducerData = [
 ]
 
 const commissionData = [
-  { producer: "Juan Pérez", commission: 12500, target: 15000 },
+  { producer: "Victor Mateos", commission: 12500, target: 15000 },
   { producer: "María González", commission: 9200, target: 12000 },
   { producer: "Carlos Rodríguez", commission: 7800, target: 10000 },
   { producer: "Ana Martínez", commission: 6100, target: 8000 },
@@ -45,7 +45,7 @@ const commissionData = [
 ]
 
 const comparisonData = [
-  { producer: "Juan Pérez", quotations: 12, policies: 8 },
+  { producer: "Victor Mateos", quotations: 12, policies: 8 },
   { producer: "María González", quotations: 9, policies: 6 },
   { producer: "Carlos Rodríguez", quotations: 8, policies: 5 },
   { producer: "Ana Martínez", quotations: 7, policies: 4 },

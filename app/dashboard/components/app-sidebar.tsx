@@ -66,8 +66,8 @@ const navigationItems = [
 
 export function AppSidebar() {
   const pathname = usePathname()
-  const producerName = "Juan Pérez"
-  const producerEmail = "juan.perez@primusbroker.com"
+  const producerName = "Victor Mateos"
+  const producerEmail = "victor.mateos@primusbroker.com"
   const profileImage = "/abstract-profile.png"
 
   return (
@@ -75,19 +75,13 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link href="/dashboard">
-                <img
-                  src="https://prymusbroker.com/wp-content/uploads/2024/12/LOGO-SITIO-WEB.png"
-                  alt="Prymus Broker"
-                  className="size-8 object-contain"
-                />
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">PRYMUS</span>
-                  <span className="text-xs text-muted-foreground">Broker</span>
-                </div>
-              </Link>
-            </SidebarMenuButton>
+            <Link href="/dashboard">
+              <img
+                src="/LOGO-SITIO-WEB.png"
+                alt="Prymus Broker"
+                className="size-max object-contain"
+              />
+            </Link>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

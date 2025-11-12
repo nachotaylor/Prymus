@@ -94,7 +94,7 @@ export default function NewPolicyPage() {
               <CardContent className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="client-name">Nombre Completo *</Label>
-                  <Input id="client-name" placeholder="Juan Pérez" required />
+                  <Input id="client-name" placeholder="Victor Mateos" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="client-dni">DNI/CUIT *</Label>

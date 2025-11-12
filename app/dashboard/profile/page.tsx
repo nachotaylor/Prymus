@@ -53,9 +53,9 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const [profileImage, setProfileImage] = useState("/abstract-profile.png")
   const [personalData, setPersonalData] = useState({
-    firstName: "Juan",
-    lastName: "Pérez",
-    email: "juan.perez@primusbroker.com",
+    firstName: "Victor",
+    lastName: "Mateos",
+    email: "victos.mateos@primusbroker.com",
     phone: "+54 9 11 2345-6789",
     dni: "35123456",
     matricula: "12345",

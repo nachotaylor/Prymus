@@ -33,7 +33,7 @@ import { useRouter } from "next/navigation"
 const quotations = [
   {
     id: "COT-001",
-    client: "Juan Pérez",
+    client: "Victor Mateos",
     vehicle: "Ford Ranger XLT 2025",
     date: "2025-01-20",
     quotes: [

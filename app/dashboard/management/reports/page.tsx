@@ -16,14 +16,14 @@ import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts"
 import Link from "next/link"
 
 const producersData = [
-  { producer: "Juan Pérez", policies: 45, quotations: 120, commission: 125000, conversionRate: "37.5%" },
+  { producer: "Victor Mateos", policies: 45, quotations: 120, commission: 125000, conversionRate: "37.5%" },
   { producer: "María González", policies: 38, quotations: 95, commission: 98000, conversionRate: "40.0%" },
   { producer: "Carlos Rodríguez", policies: 52, quotations: 140, commission: 156000, conversionRate: "37.1%" },
   { producer: "Ana Martínez", policies: 29, quotations: 78, commission: 72000, conversionRate: "37.2%" },
 ]
 
 const comparisonData = [
-  { producer: "Juan Pérez", quotations: 120, policies: 45 },
+  { producer: "Victor Mateos", quotations: 120, policies: 45 },
   { producer: "María González", quotations: 95, policies: 38 },
   { producer: "Carlos Rodríguez", quotations: 140, policies: 52 },
   { producer: "Ana Martínez", quotations: 78, policies: 29 },

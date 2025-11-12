@@ -32,7 +32,7 @@ import Link from "next/link"
 const policies = [
   {
     policyNumber: "SDS-AUTO-2025-001",
-    client: "Juan Pérez",
+    client: "Victor Mateos",
     dni: "35123456",
     company: "Allianz",
     coverage: "C3",
