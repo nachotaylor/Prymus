@@ -27,25 +27,21 @@ const companies = [
   {
     id: "rivadavia",
     name: "Rivadavia",
-    logo: "https://www.segurosrivadavia.com/logo-seguros-rivadavia.webp",
     fields: ["matricula", "usuario", "contraseña"],
   },
   {
     id: "berkley",
     name: "Berkley",
-    logo: "https://www.berkley.com.ar/img/Berkley-Argentina-Seguros2.png",
     fields: ["matricula", "usuario", "contraseña"],
   },
   {
     id: "allianz",
     name: "Allianz",
-    logo: "https://www.allianz.com.ar/content/dam/onemarketing/system/allianz-logo.svg",
     fields: ["mail", "matricula", "aplicacion", "usuario", "contraseña"],
   },
   {
     id: "mercantil",
     name: "Mercantil",
-    logo: "https://www.mercantilandina.com.ar/wp-content/uploads/2023/08/Logo-1.svg",
     fields: ["matricula", "usuario", "contraseña"],
   },
 ]
@@ -211,7 +207,6 @@ export default function NewProducerPage() {
                 <TabsList className="grid w-full grid-cols-4">
                   {companies.map((company) => (
                     <TabsTrigger key={company.id} value={company.id} className="flex items-center gap-2">
-                      <img src={company.logo || "/placeholder.svg"} alt={company.name} className="h-4 object-contain" />
                       <span className="hidden sm:inline">{company.name}</span>
                     </TabsTrigger>
                   ))}
@@ -219,11 +214,6 @@ export default function NewProducerPage() {
 
                 {companies.map((company) => (
                   <TabsContent key={company.id} value={company.id} className="space-y-4 mt-4">
-                    <div className="flex items-center gap-2 mb-4">
-                      <img src={company.logo || "/placeholder.svg"} alt={company.name} className="h-6 object-contain" />
-                      <h3 className="text-lg font-semibold">{company.name}</h3>
-                    </div>
-
                     <div className="grid gap-4 md:grid-cols-2">
                       {company.fields.map((field) => (
                         <div key={field} className="space-y-2">
@@ -236,7 +226,7 @@ export default function NewProducerPage() {
                             placeholder={`Ingrese ${field}`}
                             value={
                               formData.companies[company.id as keyof typeof formData.companies][
-                                field as keyof (typeof formData.companies)[keyof typeof formData.companies]
+                              field as keyof (typeof formData.companies)[keyof typeof formData.companies]
                               ] as string
                             }
                             onChange={(e) => handleCompanyFieldChange(company.id, field, e.target.value)}

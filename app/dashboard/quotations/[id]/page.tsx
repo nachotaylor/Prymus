@@ -1,5 +1,5 @@
 "use client"
-import { useState, useMemo } from "react"
+import { useState, useMemo, use } from "react"
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -19,6 +19,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, ArrowRight, Check, Search, FileDown } from "lucide-react"
+import useSWR from "swr"
+
+const fetcher = (url: string) =>
+  fetch(url)
+    .then((res) => res.json())
+    .catch((error) => ({ error }));
+
+
 
 const vehicleBrands = [
   { id: "chevrolet", name: "Chevrolet", logo: "/chevrolet-logo.png" },
@@ -141,8 +149,12 @@ const quotationResults = [
   },
 ]
 
-export default function NewQuotationPage() {
-  const [currentStep, setCurrentStep] = useState(1)
+export default function NewQuotationPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const { data, isLoading, error } = useSWR(`/quotation/${id}`, fetcher)
+  const router = useRouter()
+  const queryParams = new URLSearchParams(window.location.search);
+  const [currentStep, setCurrentStep] = useState(queryParams.get("step") ? parseInt(queryParams.get("step") as string, 10) : 1)
   const [selectedBrand, setSelectedBrand] = useState("")
   const [selectedModel, setSelectedModel] = useState("")
   const [selectedVersion, setSelectedVersion] = useState("")
@@ -179,6 +191,7 @@ export default function NewQuotationPage() {
     }
   }
 
+  /*
   const handleSubmit = async () => {
     console.log("[v0] Submitting quotation:", {
       brand: selectedBrand,
@@ -190,19 +203,24 @@ export default function NewQuotationPage() {
 
     setShowResults(true)
   }
+  */
 
+  /*
   const handleSaveQuotation = async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
     router.push("/dashboard/quotations")
   }
+  */
 
   const handleBackFromResults = () => {
     router.push("/dashboard/quotations")
   }
 
+  /*
   const handleDetailView = (quotation: (typeof quotationResults)[0]) => {
     setSelectedQuotation(quotation)
   }
+  */
 
   const handleBackFromDetail = () => {
     setSelectedQuotation(null)
@@ -245,101 +263,8 @@ export default function NewQuotationPage() {
     }
   }
 
-  if (showResults) {
-    if (selectedQuotation) {
-      return (
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link href="/dashboard">Dashboard</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link href="/dashboard/quotations">Cotizaciones</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <button onClick={handleBackFromDetail} className="text-blue-600 hover:underline">
-                      Resultados de Cotización
-                    </button>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Detalle - {selectedQuotation.company}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </header>
-
-          <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight">{selectedQuotation.company}</h1>
-                <p className="text-muted-foreground mt-2">Detalle de Cotización - {selectedQuotation.coverage}</p>
-              </div>
-              <Button variant="outline" onClick={handleBackFromDetail}>
-                <ArrowLeft className="mr-2 size-4" />
-                Volver
-              </Button>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <img
-                      src={selectedQuotation.logo || "/placeholder.svg"}
-                      alt={selectedQuotation.company}
-                      className="h-20 w-auto object-contain"
-                    />
-                    <div>
-                      <CardTitle>{selectedQuotation.company}</CardTitle>
-                      <CardDescription className="mt-1">{selectedQuotation.coverage}</CardDescription>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-lg bg-muted/50 p-4">
-                    <p className="text-sm text-muted-foreground">Prima Anual</p>
-                    <p className="text-3xl font-bold text-primary">
-                      ${selectedQuotation.price.toLocaleString("es-AR")}
-                    </p>
-                  </div>
-                  <div className="rounded-lg bg-muted/50 p-4">
-                    <p className="text-sm text-muted-foreground">Prima Mensual</p>
-                    <p className="text-3xl font-bold text-primary">
-                      ${selectedQuotation.pricePerMonth.toLocaleString("es-AR")}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="border-t pt-6">
-                  <h3 className="font-semibold mb-4">Cobertura</h3>
-                  <p className="text-lg text-primary font-medium">{selectedQuotation.coverage}</p>
-                </div>
-
-                <Button className="w-full" asChild>
-                  <Link href={getCompanyRoute(selectedQuotation.company)}>Seleccionar esta Cobertura</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </SidebarInset>
-      )
-    }
-
+  //if (showResults) {
+  if (selectedQuotation) {
     return (
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
@@ -360,7 +285,15 @@ export default function NewQuotationPage() {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Resultados de Cotización</BreadcrumbPage>
+                <BreadcrumbLink asChild>
+                  <button onClick={handleBackFromDetail} className="text-blue-600 hover:underline">
+                    Resultados de Cotización
+                  </button>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Detalle - {selectedQuotation.company}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -369,66 +302,151 @@ export default function NewQuotationPage() {
         <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Resultados de Cotización</h1>
-              <p className="text-muted-foreground">
-                {vehicleBrands.find((b) => b.id === selectedBrand)?.name} {selectedModel} {selectedVersion}{" "}
-                {selectedYear}
-              </p>
+              <h1 className="text-3xl font-bold tracking-tight">{selectedQuotation.company}</h1>
+              <p className="text-muted-foreground mt-2">Detalle de Cotización - {selectedQuotation.coverage}</p>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={handleGeneratePDF}>
-                <FileDown className="mr-2 size-4" />
-                Generar PDF
-              </Button>
-              <Button variant="outline" onClick={handleBackFromResults}>
-                <ArrowLeft className="mr-2 size-4" />
-                Volver
-              </Button>
-            </div>
+            <Button variant="outline" onClick={handleBackFromDetail}>
+              <ArrowLeft className="mr-2 size-4" />
+              Volver
+            </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {quotationResults.map((result) => (
-              <Card key={result.id} className="flex flex-col hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center justify-center mb-4 h-24">
-                    <img
-                      src={result.logo || "/placeholder.svg"}
-                      alt={result.company}
-                      className="max-h-24 max-w-full object-contain"
-                      onError={(e) => {
-                        e.currentTarget.src = "/placeholder.svg"
-                      }}
-                    />
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <img
+                    src={selectedQuotation.logo || "/placeholder.svg"}
+                    alt={selectedQuotation.company}
+                    className="h-20 w-auto object-contain"
+                  />
+                  <div>
+                    <CardTitle>{selectedQuotation.company}</CardTitle>
+                    <CardDescription className="mt-1">{selectedQuotation.coverage}</CardDescription>
                   </div>
-                  <CardTitle className="text-center text-lg">{result.coverage}</CardTitle>
-                </CardHeader>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-lg bg-muted/50 p-4">
+                  <p className="text-sm text-muted-foreground">Prima Anual</p>
+                  <p className="text-3xl font-bold text-primary">
+                    ${selectedQuotation.price.toLocaleString("es-AR")}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-muted/50 p-4">
+                  <p className="text-sm text-muted-foreground">Prima Mensual</p>
+                  <p className="text-3xl font-bold text-primary">
+                    ${selectedQuotation.pricePerMonth.toLocaleString("es-AR")}
+                  </p>
+                </div>
+              </div>
 
-                <CardContent className="flex flex-col flex-1">
-                  <div className="flex-1 border-t pt-4">
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground">Prima Anual</p>
-                      <p className="text-2xl font-bold text-primary">${result.price.toLocaleString("es-AR")}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        ${result.pricePerMonth.toLocaleString("es-AR")}/mes
-                      </p>
-                    </div>
-                  </div>
+              <div className="border-t pt-6">
+                <h3 className="font-semibold mb-4">Cobertura</h3>
+                <p className="text-lg text-primary font-medium">{selectedQuotation.coverage}</p>
+              </div>
 
-                  <div className="flex flex-col gap-2 mt-4">
-                    {/* Removed "Ver Detalle" button */}
-                    <Button className="w-full" asChild>
-                      <Link href={getCompanyRoute(result.company)}>Seleccionar</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+              <Button className="w-full" asChild>
+                <Link href={getCompanyRoute(selectedQuotation.company)}>Seleccionar esta Cobertura</Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </SidebarInset>
     )
   }
+
+  return (
+    <SidebarInset>
+      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <SidebarTrigger className="-ml-1" />
+        <Separator orientation="vertical" className="mr-2 h-4" />
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/dashboard">Dashboard</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/dashboard/quotations">Cotizaciones</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Resultados de Cotización</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </header>
+
+      <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Resultados de Cotización</h1>
+            <p className="text-muted-foreground">
+              {vehicleBrands.find((b) => b.id === selectedBrand)?.name} {selectedModel} {selectedVersion}{" "}
+              {selectedYear}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleGeneratePDF}>
+              <FileDown className="mr-2 size-4" />
+              Generar PDF
+            </Button>
+            <Button variant="outline" onClick={handleBackFromResults}>
+              <ArrowLeft className="mr-2 size-4" />
+              Volver
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {quotationResults.map((result) => (
+            <Card key={result.id} className="flex flex-col hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="flex items-center justify-center mb-4 h-24">
+                  <img
+                    src={result.logo || "/placeholder.svg"}
+                    alt={result.company}
+                    className="max-h-24 max-w-full object-contain"
+                    onError={(e) => {
+                      e.currentTarget.src = "/placeholder.svg"
+                    }}
+                  />
+                </div>
+                <CardTitle className="text-center text-lg">{result.coverage}</CardTitle>
+              </CardHeader>
+
+              <CardContent className="flex flex-col flex-1">
+                <div className="flex-1 border-t pt-4">
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground">Prima Anual</p>
+                    <p className="text-2xl font-bold text-primary">${result.price.toLocaleString("es-AR")}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      ${result.pricePerMonth.toLocaleString("es-AR")}/mes
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2 mt-4">
+                  {/* Removed "Ver Detalle" button */}
+                  <Button className="w-full" asChild>
+                    <Link href={getCompanyRoute(result.company)}>Seleccionar</Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </SidebarInset>
+  )
+  //}
 
   return (
     <SidebarInset>

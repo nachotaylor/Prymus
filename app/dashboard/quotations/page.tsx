@@ -77,7 +77,7 @@ export default function QuotationsPage() {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [companyFilter, setCompanyFilter] = useState("all")
-  const [selectedQuotation, setSelectedQuotation] = useState<(typeof quotations)[0] | null>(null)
+  const [selectedQuotation] = useState<(typeof quotations)[0] | null>(null)
   const [isDetailOpen, setIsDetailOpen] = useState(false)
 
   const filteredQuotations = quotations.filter((quotation) => {
@@ -91,10 +91,12 @@ export default function QuotationsPage() {
     return matchesSearch && matchesCompany
   })
 
+  /*
   const handleViewDetail = (quotation: (typeof quotations)[0]) => {
     setSelectedQuotation(quotation)
     setIsDetailOpen(true)
   }
+  */
 
   const handleGeneratePDF = (quotation: (typeof quotations)[0]) => {
     console.log("[v0] Generating PDF for quotation:", quotation.id)
@@ -229,9 +231,11 @@ export default function QuotationsPage() {
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => handleViewDetail(quotation)}>
+                              <DropdownMenuItem>
                                 <Eye className="mr-2 size-4" />
-                                Ver Detalle
+                                <Link href={{ pathname: "/dashboard/quotations/1" }}>
+                                  Ver Detalle
+                                </Link>
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => handleGeneratePDF(quotation)}>
                                 <FileText className="mr-2 size-4" />

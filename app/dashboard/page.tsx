@@ -14,9 +14,9 @@ export default function DashboardPage() {
       trend: "+12%",
     },
     {
-      title: "Pólizas Vigentes",
+      title: "Emisiones",
       value: "156",
-      description: "8 por vencer este mes",
+      description: "",
       icon: Shield,
       trend: "+8%",
     },

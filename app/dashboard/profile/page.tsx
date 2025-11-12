@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { User, Lock, Save, Upload } from "lucide-react"
+import { User, Lock, Building2, Save, Upload } from "lucide-react"
 import Link from "next/link"
 
 const companies = [
@@ -43,7 +43,7 @@ const companies = [
   },
   {
     id: "mercantil",
-    name: "Mercantil",
+    name: "Mercantil Andina",
     logo: "https://www.mercantilandina.com.ar/wp-content/uploads/2023/08/Logo-1.svg",
     fields: ["matricula", "usuario", "contraseña"],
   },
@@ -153,21 +153,13 @@ export default function ProfilePage() {
               <User className="size-4" />
               <span className="hidden sm:inline">Personal</span>
             </TabsTrigger>
-            <TabsTrigger value="rivadavia" className="flex items-center gap-2">
-              <img src={companies[0].logo || "/placeholder.svg"} alt="Rivadavia" className="h-3 object-contain" />
-              <span className="hidden sm:inline">Rivadavia</span>
-            </TabsTrigger>
-            <TabsTrigger value="berkley" className="flex items-center gap-2">
-              <img src={companies[1].logo || "/placeholder.svg"} alt="Berkley" className="h-3 object-contain" />
-              <span className="hidden sm:inline">Berkley</span>
-            </TabsTrigger>
-            <TabsTrigger value="allianz" className="flex items-center gap-2">
-              <img src={companies[2].logo || "/placeholder.svg"} alt="Allianz" className="h-3 object-contain" />
-              <span className="hidden sm:inline">Allianz</span>
-            </TabsTrigger>
             <TabsTrigger value="security" className="flex items-center gap-2">
               <Lock className="size-4" />
               <span className="hidden sm:inline">Seguridad</span>
+            </TabsTrigger>
+            <TabsTrigger value="companies" className="flex items-center gap-2">
+              <Building2 className="size-4" />
+              <span className="hidden sm:inline">Comapñias</span>
             </TabsTrigger>
           </TabsList>
 
@@ -179,19 +171,6 @@ export default function ProfilePage() {
                     <CardTitle>Información Personal</CardTitle>
                     <CardDescription>Actualiza tu información personal</CardDescription>
                   </div>
-                  <Button
-                    variant={isEditing ? "default" : "outline"}
-                    onClick={() => (isEditing ? handleSavePersonal() : setIsEditing(true))}
-                  >
-                    {isEditing ? (
-                      <>
-                        <Save className="mr-2 size-4" />
-                        Guardar
-                      </>
-                    ) : (
-                      "Editar"
-                    )}
-                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -289,26 +268,34 @@ export default function ProfilePage() {
                     />
                   </div>
                 </div>
+                <Button
+                  variant={isEditing ? "default" : "outline"}
+                  onClick={() => (isEditing ? handleSavePersonal() : setIsEditing(true))}
+                >
+                  {isEditing ? (
+                    <>
+                      <Save className="mr-2 size-4" />
+                      Guardar
+                    </>
+                  ) : (
+                    "Editar"
+                  )}
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {companies.map((company) => (
-            <TabsContent key={company.id} value={company.id} className="space-y-4">
+          <TabsContent value="companies" className="space-y-4">
+            {companies.map((company) => (
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <img src={company.logo || "/placeholder.svg"} alt={company.name} className="h-8 object-contain" />
                       <div>
-                        <CardTitle>{company.name}</CardTitle>
+                        <img src={company.logo || "/placeholder.svg"} alt={company.name} className="h-8 object-contain" />
                         <CardDescription>Credenciales de acceso para {company.name}</CardDescription>
                       </div>
                     </div>
-                    <Button variant="outline" onClick={() => handleSaveCompanyCredentials(company.id)}>
-                      <Save className="mr-2 size-4" />
-                      Guardar
-                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -324,7 +311,7 @@ export default function ProfilePage() {
                           placeholder={`Ingrese ${field}`}
                           value={
                             companyCredentials[company.id as keyof typeof companyCredentials][
-                              field as keyof (typeof companyCredentials)[keyof typeof companyCredentials]
+                            field as keyof (typeof companyCredentials)[keyof typeof companyCredentials]
                             ] as string
                           }
                           onChange={(e) => handleCompanyFieldChange(company.id, field, e.target.value)}
@@ -334,8 +321,12 @@ export default function ProfilePage() {
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
-          ))}
+            ))}
+            <Button variant="outline" onClick={() => handleSaveCompanyCredentials(company.id)}>
+              <Save className="mr-2 size-4" />
+              Guardar
+            </Button>
+          </TabsContent>
 
           <TabsContent value="security" className="space-y-4">
             <Card>
@@ -417,6 +408,6 @@ export default function ProfilePage() {
           </TabsContent>
         </Tabs>
       </div>
-    </SidebarInset>
+    </SidebarInset >
   )
 }
