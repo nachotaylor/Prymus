@@ -69,7 +69,7 @@ export default function DashboardPage() {
               {[
                 {
                   type: "Cotización",
-                  client: "Juan Pérez",
+                  client: "Victo Mateos",
                   product: "Seguro de Auto",
                   date: "Hace 2 horas",
                 },

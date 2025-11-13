@@ -63,11 +63,6 @@ function MercantilIssueContent() {
             <BreadcrumbItem>
               <BreadcrumbPage>
                 <div className="flex items-center gap-2">
-                  <img
-                    src="https://www.mercantilandina.com.ar/wp-content/uploads/2023/08/Logo-1.svg"
-                    alt="Mercantil Andina"
-                    className="h-5 object-contain"
-                  />
                   Emitir Póliza
                 </div>
               </BreadcrumbPage>

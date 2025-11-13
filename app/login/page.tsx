@@ -83,7 +83,7 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="productor@ejemplo.com"
+                  placeholder="productor@prymusbroker.com.ar"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}

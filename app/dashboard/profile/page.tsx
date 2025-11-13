@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
@@ -18,7 +17,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
 import { User, Lock, Building2, Save, Upload } from "lucide-react"
 import Link from "next/link"
 
@@ -371,37 +369,18 @@ export default function ProfilePage() {
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <p className="text-sm text-blue-800">
                     <strong>Requisitos de contraseña:</strong>
-                    <ul className="list-disc list-inside mt-2 space-y-1">
-                      <li>Mínimo 8 caracteres</li>
-                      <li>Al menos una letra mayúscula</li>
-                      <li>Al menos una letra minúscula</li>
-                      <li>Al menos un número</li>
-                      <li>Al menos un carácter especial (!@#$%^&*)</li>
-                    </ul>
                   </p>
+                  <ul className="list-disc list-inside mt-2 space-y-1">
+                    <li>Mínimo 8 caracteres</li>
+                    <li>Al menos una letra mayúscula</li>
+                    <li>Al menos una letra minúscula</li>
+                    <li>Al menos un número</li>
+                    <li>Al menos un carácter especial (!@#$%^&*)</li>
+                  </ul>
                 </div>
 
                 <div className="flex justify-end">
                   <Button onClick={handleChangePassword}>Cambiar Contraseña</Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Sesiones Activas</CardTitle>
-                <CardDescription>Administra tus sesiones activas</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <p className="font-medium">Sesión Actual</p>
-                      <p className="text-sm text-muted-foreground">Navegador: Chrome en Windows</p>
-                      <p className="text-sm text-muted-foreground">IP: 192.168.1.100</p>
-                    </div>
-                    <Badge>Activa</Badge>
-                  </div>
                 </div>
               </CardContent>
             </Card>
